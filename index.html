@@ -1,0 +1,67 @@
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Consulta CEP</title>
+
+    <link rel="stylesheet" href="Style.css">
+
+</head>
+<body>
+
+    <div class="form-container">
+        <label for="cep">Digite o CEP:</label>
+        <input name="cep" type="text" id="cep"/>
+        <button id="pesquisar-cep">Pesquisar</button>
+    </div>
+
+    <div id="container"></div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script>
+        $("#pesquisar-cep").click(onPesquisar);
+
+        function onPesquisar(){
+            let cep = $("#cep").val().trim();
+            $("#container").html("");
+
+            $.ajax({
+                url: "https://viacep.com.br/ws/" + cep + "/json/",
+                method: "GET",
+                success: processarDados,
+                error: mostrarErro
+            });
+        }
+
+        function processarDados(dado){
+            if(dado.erro){
+                $("#container").append("<p>CEP não encontrado</p>");
+                return;
+            }
+
+            let cep = $("<p/>");
+            let logradouro = $("<p/>");
+            let bairro = $("<p/>");
+            let cidade = $("<p/>");
+            let uf = $("<p/>");
+
+            cep.text("CEP: " + dado.cep);
+            logradouro.text("Logradouro: " + dado.logradouro);
+            bairro.text("Bairro: " + dado.bairro);
+            cidade.text("Cidade: " + dado.localidade);
+            uf.text("UF: " + dado.uf);
+
+            $("#container").append(cep, logradouro, bairro, cidade, uf);
+        }
+
+        function mostrarErro(){
+            $("#container").append("<p>Erro ao consultar o CEP</p>");
+        }
+    </script>
+
+</body>
